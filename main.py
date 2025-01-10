@@ -7,6 +7,9 @@ import random
 import math
 import os
 
+from candidate import CandidateModel
+import knn
+
 """
 Data format:
 creation-timestamp, latitude, longitude, likes, shares, comments, friends
@@ -59,8 +62,8 @@ def update_csv(path: str) -> np.ndarray:
 
 def load_csv(path: str) -> np.ndarray:
     df = pd.read_csv(path)
+    print(f"Loaded csv of shape {df.shape}")
     npa = df.to_numpy(dtype=object)
-    print(npa.size)
     return npa
 
 
@@ -85,5 +88,9 @@ def reduce_dataset(path: str, n: int = 11500):
     )
 
 
-# reduce_dataset("./dataset/instagram_data.csv")
-update_csv("./dataset/instagram_data-reduced-11500.csv")
+if __name__ == "__main__":
+    training = load_csv("./dataset/post_data.csv")
+
+    # model = CandidateModel(knn.Model("./models/null.pkl"), np.zeros(1))
+    reduced_training = CandidateModel.reduce(training, language="en")
+    print(reduced_training.shape)
