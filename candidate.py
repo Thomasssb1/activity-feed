@@ -23,7 +23,7 @@ class CandidateModel:
 
         def timeDecayFunc(timestamp: float, epoch: datetime) -> float:
             days = (epoch - datetime.fromtimestamp(timestamp)).days
-            return INITIAL_RELEVANCE / 1 + math.log(1 + days) + MINIMUM_RELEVANCE
+            return (INITIAL_RELEVANCE / (1 + math.log(1 + days))) + MINIMUM_RELEVANCE
 
         now = datetime.now()
         return np.array(
@@ -76,3 +76,12 @@ class CandidateModel:
         decayIndices = np.argsort(decayArray, axis=0).flatten()[:50_000]
 
         return np.hstack([inputData, decayArray])[decayIndices]
+
+    @staticmethod
+    def normalise(inputData: np.ndarray, epsilon: float = 1e-10) -> np.ndarray:
+        # calculate the per column maximum and minimum values
+        maximum = np.max(inputData, axis=0)
+        minimum = np.min(inputData, axis=0)
+        difference = maximum - minimum
+        difference[difference == 0] = epsilon
+        return (inputData - minimum) / difference
